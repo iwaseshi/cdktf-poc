@@ -1,2 +1,9 @@
+# Terraform output directories
+cdktf.out/
+
 # Dependency directories
 node_modules/
+
+# System Files
+**/.DS_Store
+*.DS_Store
