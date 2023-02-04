@@ -1,49 +1,69 @@
-import { Construct } from "constructs";
-import { App, TerraformStack } from "cdktf";
 import { GoogleProvider } from "@cdktf/provider-google/lib/provider";
-import { CloudRunService } from "@cdktf/provider-google/lib/cloud-run-service";
-import { DataGoogleIamPolicy } from "@cdktf/provider-google/lib/data-google-iam-policy";
-import { CloudRunServiceIamPolicy } from "@cdktf/provider-google/lib/cloud-run-service-iam-policy";
+import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
+import { StorageBucket } from "@cdktf/provider-google/lib/storage-bucket";
+import { StorageBucketIamBinding } from "@cdktf/provider-google/lib/storage-bucket-iam-binding";
+import { App, GcsBackend, TerraformStack } from "cdktf";
+import { Construct } from "constructs";
 
-   const LOCAL = "asia-northeast1";
-   const PROJECT_NAME = "cdktf-ts-poc"; 
+const LOCAL = "asia-northeast1";
+const PROJECT_NAME = "cdktf-ts-poc";
 
 class MyStack extends TerraformStack {
-    constructor(scope: Construct, name: string) {
-        super(scope, name);
+  constructor(scope: Construct, name: string) {
+    super(scope, name);
 
-        new GoogleProvider(this, "google", {
-            project: PROJECT_NAME
-        });
+    const provider = new GoogleProvider(this, "google", {
+      project: PROJECT_NAME,
+    });
 
-         const cloudrunsvcapp = new CloudRunService(this, "GcpCDKCloudrunsvc", {
-            location: LOCAL,
-            name: "gcpcdktfcloudrunsvc2020",
-            template: {
-                spec: {
-                containers: [
-                    {
-                    image: "gcr.io/cloudrun/hello",
-                    },
-                ],
-                },
-            },
-        });
-        const policy_data = new DataGoogleIamPolicy(this, "datanoauth", {
-            binding: [
-                {
-                role: "roles/run.invoker",
-                members: ["allUsers"],
-                },
-            ],
-        });
-        new CloudRunServiceIamPolicy(this, "runsvciampolicy", {
-            location: LOCAL,
-            project: cloudrunsvcapp.project,
-            service: cloudrunsvcapp.name,
-            policyData: policy_data.policyData,
-        });
-    }
+    // リモートバックエンドの指定
+    new GcsBackend(this, {
+      bucket: "cdktf-remote-backend",
+      prefix: "state",
+    });
+
+    // サービスアカウントの作成
+    const serviceAccount = new ServiceAccount(
+      this,
+      "Generate Service Account",
+      {
+        provider: provider,
+        accountId: "cdktf-example-service-account",
+        displayName: "cdktf-example-service-account",
+      }
+    );
+
+    // GCSバケット作成
+    const bucket = new StorageBucket(this, "Generate GCS Bucket", {
+      provider: provider,
+      location: LOCAL,
+      name: "aaaa-aaaa-a",
+      uniformBucketLevelAccess: true,
+      dependsOn: [serviceAccount],
+    });
+
+    // GCSバケットへの権限追加
+    new StorageBucketIamBinding(
+      this,
+      "Add role roles/storage.legacyBucketReader",
+      {
+        provider: provider,
+        bucket: bucket.name,
+        role: "roles/storage.legacyBucketReader",
+        members: [`serviceAccount:${serviceAccount.email}`],
+        dependsOn: [serviceAccount, bucket],
+      }
+    );
+
+    // オブジェクトへの権限追加
+    new StorageBucketIamBinding(this, "Add role roles/storage.objectViewer", {
+      provider: provider,
+      bucket: bucket.name,
+      role: "roles/storage.objectViewer",
+      members: [`serviceAccount:${serviceAccount.email}`],
+      dependsOn: [serviceAccount, bucket],
+    });
+  }
 }
 
 const app = new App();
