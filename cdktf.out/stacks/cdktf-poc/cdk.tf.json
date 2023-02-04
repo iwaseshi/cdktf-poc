@@ -1,0 +1,88 @@
+{
+  "//": {
+    "metadata": {
+      "backend": "local",
+      "stackName": "cdktf-poc",
+      "version": "0.14.3"
+    },
+    "outputs": {
+    }
+  },
+  "data": {
+    "google_iam_policy": {
+      "datanoauth": {
+        "//": {
+          "metadata": {
+            "path": "cdktf-poc/datanoauth",
+            "uniqueId": "datanoauth"
+          }
+        },
+        "binding": [
+          {
+            "members": [
+              "allUsers"
+            ],
+            "role": "roles/run.invoker"
+          }
+        ]
+      }
+    }
+  },
+  "provider": {
+    "google": [
+      {
+        "project": "cdktf-ts-poc"
+      }
+    ]
+  },
+  "resource": {
+    "google_cloud_run_service": {
+      "GcpCDKCloudrunsvc": {
+        "//": {
+          "metadata": {
+            "path": "cdktf-poc/GcpCDKCloudrunsvc",
+            "uniqueId": "GcpCDKCloudrunsvc"
+          }
+        },
+        "location": "asia-northeast1",
+        "name": "gcpcdktfcloudrunsvc2020",
+        "template": {
+          "spec": {
+            "containers": [
+              {
+                "image": "gcr.io/cloudrun/hello"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "google_cloud_run_service_iam_policy": {
+      "runsvciampolicy": {
+        "//": {
+          "metadata": {
+            "path": "cdktf-poc/runsvciampolicy",
+            "uniqueId": "runsvciampolicy"
+          }
+        },
+        "location": "asia-northeast1",
+        "policy_data": "${data.google_iam_policy.datanoauth.policy_data}",
+        "project": "${google_cloud_run_service.GcpCDKCloudrunsvc.project}",
+        "service": "${google_cloud_run_service.GcpCDKCloudrunsvc.name}"
+      }
+    }
+  },
+  "terraform": {
+    "backend": {
+      "local": {
+        "path": "/Users/atsuyaiwase/dev/source_repo/group/poc-private-only/nodejs/cdktf-poc/terraform.cdktf-poc.tfstate"
+      }
+    },
+    "required_providers": {
+      "google": {
+        "source": "google",
+        "version": "4.49.0"
+      }
+    }
+  }
+}

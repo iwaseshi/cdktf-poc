@@ -1,0 +1,13 @@
+{
+  "version": "0.14.3",
+  "stacks": {
+    "cdktf-poc": {
+      "name": "cdktf-poc",
+      "constructPath": "cdktf-poc",
+      "workingDirectory": "stacks/cdktf-poc",
+      "synthesizedStackPath": "stacks/cdktf-poc/cdk.tf.json",
+      "annotations": [],
+      "dependencies": []
+    }
+  }
+}
