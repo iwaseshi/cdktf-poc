@@ -4,7 +4,7 @@ import { App, GcsBackend, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 
 const PROJECT_NAME = "cdktf-ts-poc";
-const REMOTE_BACKEND = PROJECT_NAME + "-terraform-state";
+// const REMOTE_BACKEND = PROJECT_NAME + "-terraform-state";
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -21,7 +21,7 @@ class MyStack extends TerraformStack {
     });
 
     new GcsBackend(this, {
-      bucket: REMOTE_BACKEND,
+      bucket: "cdktf-remote-backend",
       prefix: "state",
     });
   }
