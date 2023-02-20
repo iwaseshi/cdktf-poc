@@ -35,7 +35,7 @@ jobs:
           yarn install
 
       - name: Generate module and provider bindings
-        run: npx cdktf-cli get
+        run: npm install --global cdktf-cli@latest
 
       - name: Deploy with CDKTF
         run: |
