@@ -10,7 +10,7 @@ permissions:
 
 env:
   GOOGLE_PROJECT_ID: cdktf-ts-poc
-  WORKLOAD_IDENTITY_PROVIDER: "projects/427613606/locations/global/workloadIdentityPools/-github-actions-pool/providers/github-actions-provider"
+  WORKLOAD_IDENTITY_PROVIDER: "projects/427613606/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
 jobs:
   cdk-deploy:
     runs-on: ubuntu-latest
