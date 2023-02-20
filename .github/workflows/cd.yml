@@ -4,9 +4,13 @@ on:
   [push]
   # branches: ["main"]
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   GOOGLE_PROJECT_ID: cdktf-ts-poc
-
+  WORKLOAD_IDENTITY_PROVIDER: "projects/427613606/locations/global/workloadIdentityPools/-github-actions-pool/providers/github-actions-provider"
 jobs:
   cdk-deploy:
     runs-on: ubuntu-latest
@@ -21,6 +25,13 @@ jobs:
           project-id: ${{ env.GOOGLE_PROJECT_ID }}
           service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
           # service-account-key: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - id: "auth"
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v1"
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - uses: hashicorp/setup-terraform@v2
         with:
