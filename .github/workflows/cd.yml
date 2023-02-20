@@ -22,9 +22,16 @@ jobs:
           service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
           # service-account-key: ${{ secrets.GOOGLE_CREDENTIALS }}
 
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18"
+
       - name: Install dependencies
         run: |
           yarn install
+
+      - name: Generate module and provider bindings
+        run: npx cdktf-cli get
 
       - name: Deploy with CDKTF
         run: |
