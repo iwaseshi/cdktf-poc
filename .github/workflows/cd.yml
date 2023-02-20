@@ -39,5 +39,5 @@ jobs:
 
       - name: Deploy with CDKTF
         run: |
-          pwd
+          cdktf --help
           yarn deploy
