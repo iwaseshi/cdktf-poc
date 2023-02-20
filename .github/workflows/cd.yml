@@ -6,7 +6,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 env:
   GOOGLE_PROJECT_ID: cdktf-ts-poc
@@ -18,13 +18,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Configure Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@main
-        with:
-          version: latest
-          project-id: ${{ env.GOOGLE_PROJECT_ID }}
-          service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
-          # service-account-key: ${{ secrets.GOOGLE_CREDENTIALS }}
+      # - name: Configure Google Cloud SDK
+      #   uses: google-github-actions/setup-gcloud@main
+      #   with:
+      #     version: latest
+      #     project-id: ${{ env.GOOGLE_PROJECT_ID }}
+      #     service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
+      #     # service-account-key: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - id: "auth"
         name: "Authenticate to Google Cloud"
