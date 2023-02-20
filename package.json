@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "get": "cdktf get",
-    "deploy": "cdktf deploy --auto-approve",
+    "deploy": "terraform apply --auto-approve",
     "build": "tsc",
     "synth": "cdktf synth",
     "compile": "tsc --pretty",
