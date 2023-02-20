@@ -1,9 +1,8 @@
 name: Deploy
 
 on:
-  push:
-    tags: ["v*"]
-    # branches: ["main"]
+  [push]
+  # branches: ["main"]
 
 env:
   GOOGLE_PROJECT_ID: cdktf-ts-poc
