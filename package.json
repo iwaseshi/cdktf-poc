@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "get": "cdktf get",
+    "deploy": "cdktf deploy",
     "build": "tsc",
     "synth": "cdktf synth",
     "compile": "tsc --pretty",
