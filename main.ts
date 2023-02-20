@@ -1,10 +1,10 @@
 import { GoogleProvider } from "@cdktf/provider-google/lib/provider";
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
-import { App, GcsBackend, TerraformStack } from "cdktf";
+import { App, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 
 const PROJECT_NAME = "cdktf-ts-poc";
-const REMOTE_BACKEND = "cdktf-remote-backend"; //PROJECT_NAME + "-terraform-state";
+//const REMOTE_BACKEND = "cdktf-remote-backend"; //PROJECT_NAME + "-terraform-state";
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -20,10 +20,10 @@ class MyStack extends TerraformStack {
       displayName: PROJECT_NAME + "-terraform",
     });
 
-    new GcsBackend(this, {
-      bucket: REMOTE_BACKEND,
-      prefix: "state",
-    });
+    //   new GcsBackend(this, {
+    //     bucket: REMOTE_BACKEND,
+    //     prefix: "state",
+    //   });
   }
 }
 
