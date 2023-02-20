@@ -2,7 +2,7 @@ import { GoogleProvider } from "@cdktf/provider-google/lib/provider";
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
 import { StorageBucket } from "@cdktf/provider-google/lib/storage-bucket";
 import { StorageBucketIamBinding } from "@cdktf/provider-google/lib/storage-bucket-iam-binding";
-import { App, GcsBackend, TerraformStack } from "cdktf";
+import { App, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 
 const LOCAL = "asia-northeast1";
@@ -16,28 +16,23 @@ class MyStack extends TerraformStack {
       project: PROJECT_NAME,
     });
 
-    // リモートバックエンドの指定
-    new GcsBackend(this, {
-      bucket: "cdktf-remote-backend",
-      prefix: "state",
-    });
-
     // サービスアカウントの作成
     const serviceAccount = new ServiceAccount(
       this,
-      "Generate Service Account",
+      "Generate service account",
       {
         provider: provider,
-        accountId: "cdktf-example-service-account",
-        displayName: "cdktf-example-service-account",
+        accountId: PROJECT_NAME + "-terraform",
+        displayName: PROJECT_NAME + "-terraform",
       }
     );
 
     // GCSバケット作成
-    const bucket = new StorageBucket(this, "Generate GCS Bucket", {
+    // TODO: deploy後に以下で作成したバケットをモートバックエンド指定に指定する。
+    const bucket = new StorageBucket(this, "Generate GCS bucket", {
       provider: provider,
       location: LOCAL,
-      name: "aaaa-aaaa-a",
+      name: PROJECT_NAME + "-terraform-state",
       uniformBucketLevelAccess: true,
       dependsOn: [serviceAccount],
     });
