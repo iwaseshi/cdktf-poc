@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  push:
+    tags: ["v*"]
+    # branches: ["main"]
+
+env:
+  GOOGLE_PROJECT_ID: cdktf-ts-poc
+
+jobs:
+  cdk-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          version: latest
+          project-id: ${{ env.GOOGLE_PROJECT_ID }}
+          service_account: ${{ secrets.GOOGLE_CREDENTIALS }}
+          # service-account-key: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Install dependencies
+        run: |
+          yarn install
+
+      - name: Deploy with CDKTF
+        run: |
+          yarn deploy

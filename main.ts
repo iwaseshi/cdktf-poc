@@ -1,12 +1,10 @@
 import { GoogleProvider } from "@cdktf/provider-google/lib/provider";
 import { ServiceAccount } from "@cdktf/provider-google/lib/service-account";
-import { StorageBucket } from "@cdktf/provider-google/lib/storage-bucket";
-import { StorageBucketIamBinding } from "@cdktf/provider-google/lib/storage-bucket-iam-binding";
-import { App, TerraformStack } from "cdktf";
+import { App, GcsBackend, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 
-const LOCAL = "asia-northeast1";
 const PROJECT_NAME = "cdktf-ts-poc";
+const REMOTE_BACKEND = PROJECT_NAME + "-terraform-state";
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, name: string) {
@@ -16,47 +14,15 @@ class MyStack extends TerraformStack {
       project: PROJECT_NAME,
     });
 
-    // サービスアカウントの作成
-    const serviceAccount = new ServiceAccount(
-      this,
-      "Generate service account",
-      {
-        provider: provider,
-        accountId: PROJECT_NAME + "-terraform",
-        displayName: PROJECT_NAME + "-terraform",
-      }
-    );
-
-    // GCSバケット作成
-    // TODO: deploy後に以下で作成したバケットをモートバックエンド指定に指定する。
-    const bucket = new StorageBucket(this, "Generate GCS bucket", {
+    new ServiceAccount(this, "Generate service account", {
       provider: provider,
-      location: LOCAL,
-      name: PROJECT_NAME + "-terraform-state",
-      uniformBucketLevelAccess: true,
-      dependsOn: [serviceAccount],
+      accountId: PROJECT_NAME + "-terraform",
+      displayName: PROJECT_NAME + "-terraform",
     });
 
-    // GCSバケットへの権限追加
-    new StorageBucketIamBinding(
-      this,
-      "Add role roles/storage.legacyBucketReader",
-      {
-        provider: provider,
-        bucket: bucket.name,
-        role: "roles/storage.legacyBucketReader",
-        members: [`serviceAccount:${serviceAccount.email}`],
-        dependsOn: [serviceAccount, bucket],
-      }
-    );
-
-    // オブジェクトへの権限追加
-    new StorageBucketIamBinding(this, "Add role roles/storage.objectViewer", {
-      provider: provider,
-      bucket: bucket.name,
-      role: "roles/storage.objectViewer",
-      members: [`serviceAccount:${serviceAccount.email}`],
-      dependsOn: [serviceAccount, bucket],
+    new GcsBackend(this, {
+      bucket: REMOTE_BACKEND,
+      prefix: "state",
     });
   }
 }
